@@ -1,5 +1,28 @@
+-- phpMyAdmin SQL Dump
+-- version 4.7.0
+-- https://www.phpmyadmin.net/
+--
+-- Host: localhost
+-- Generation Time: Sep 24, 2018 at 05:02 PM
+-- Server version: 10.1.25-MariaDB
+-- PHP Version: 7.1.7
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
 SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `test`
+--
+CREATE DATABASE IF NOT EXISTS `test` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `test`;
 
 -- --------------------------------------------------------
 
@@ -8,7 +31,7 @@ SET time_zone = "+00:00";
 --
 
 DROP TABLE IF EXISTS `allowed`;
-CREATE TABLE IF NOT EXISTS `allowed` (
+CREATE TABLE `allowed` (
   `course_id` char(10) NOT NULL,
   `batch_name` varchar(30) NOT NULL,
   `batch_dept` char(5) NOT NULL
@@ -21,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `allowed` (
 --
 
 DROP TABLE IF EXISTS `batches`;
-CREATE TABLE IF NOT EXISTS `batches` (
+CREATE TABLE `batches` (
   `batch_name` varchar(30) NOT NULL,
   `batch_dept` char(5) NOT NULL,
   `size` int(11) NOT NULL
@@ -34,7 +57,7 @@ CREATE TABLE IF NOT EXISTS `batches` (
 --
 
 DROP TABLE IF EXISTS `config`;
-CREATE TABLE IF NOT EXISTS `config` (
+CREATE TABLE `config` (
   `Name` varchar(30) NOT NULL,
   `value` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -46,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `config` (
 --
 
 DROP TABLE IF EXISTS `courses`;
-CREATE TABLE IF NOT EXISTS `courses` (
+CREATE TABLE `courses` (
   `course_id` char(10) NOT NULL,
   `course_name` varchar(100) NOT NULL,
   `fac_id` char(25) NOT NULL,
@@ -60,10 +83,18 @@ CREATE TABLE IF NOT EXISTS `courses` (
 --
 
 DROP TABLE IF EXISTS `depts`;
-CREATE TABLE IF NOT EXISTS `depts` (
+CREATE TABLE `depts` (
   `dept_code` char(5) NOT NULL,
   `dept_name` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `depts`
+--
+
+INSERT INTO `depts` (`dept_code`, `dept_name`) VALUES
+('1', 'dept1'),
+('2', 'dept2');
 
 -- --------------------------------------------------------
 
@@ -72,7 +103,7 @@ CREATE TABLE IF NOT EXISTS `depts` (
 --
 
 DROP TABLE IF EXISTS `faculty`;
-CREATE TABLE IF NOT EXISTS `faculty` (
+CREATE TABLE `faculty` (
   `uName` char(25) NOT NULL,
   `fac_name` varchar(50) NOT NULL,
   `pswd` char(64) NOT NULL,
@@ -81,6 +112,14 @@ CREATE TABLE IF NOT EXISTS `faculty` (
   `dateRegd` char(25) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `faculty`
+--
+
+INSERT INTO `faculty` (`uName`, `fac_name`, `pswd`, `level`, `dept_code`, `dateRegd`) VALUES
+('dean', 'dean', 'dean', 'dean', '2', ''),
+('sch1', 'sch1-faculty1', 'sch1', 'faculty', '1', '');
+
 -- --------------------------------------------------------
 
 --
@@ -88,7 +127,7 @@ CREATE TABLE IF NOT EXISTS `faculty` (
 --
 
 DROP TABLE IF EXISTS `rooms`;
-CREATE TABLE IF NOT EXISTS `rooms` (
+CREATE TABLE `rooms` (
   `room_name` varchar(25) NOT NULL,
   `capacity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -100,10 +139,10 @@ CREATE TABLE IF NOT EXISTS `rooms` (
 --
 
 DROP TABLE IF EXISTS `slots`;
-CREATE TABLE IF NOT EXISTS `slots` (
+CREATE TABLE `slots` (
   `table_name` varchar(30) NOT NULL,
-  `day` int(1) unsigned NOT NULL,
-  `slot_num` int(2) unsigned NOT NULL,
+  `day` int(1) UNSIGNED NOT NULL,
+  `slot_num` int(2) UNSIGNED NOT NULL,
   `state` enum('active','disabled') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -114,10 +153,10 @@ CREATE TABLE IF NOT EXISTS `slots` (
 --
 
 DROP TABLE IF EXISTS `slot_allocs`;
-CREATE TABLE IF NOT EXISTS `slot_allocs` (
+CREATE TABLE `slot_allocs` (
   `table_name` varchar(30) NOT NULL,
-  `day` int(1) unsigned NOT NULL,
-  `slot_num` int(2) unsigned NOT NULL,
+  `day` int(1) UNSIGNED NOT NULL,
+  `slot_num` int(2) UNSIGNED NOT NULL,
   `room` varchar(25) NOT NULL,
   `course_id` char(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -129,7 +168,7 @@ CREATE TABLE IF NOT EXISTS `slot_allocs` (
 --
 
 DROP TABLE IF EXISTS `timetables`;
-CREATE TABLE IF NOT EXISTS `timetables` (
+CREATE TABLE `timetables` (
   `table_name` varchar(30) NOT NULL,
   `days` int(11) NOT NULL DEFAULT '5',
   `slots` int(11) NOT NULL DEFAULT '0',
@@ -222,7 +261,7 @@ ALTER TABLE `timetables`
 -- Constraints for table `allowed`
 --
 ALTER TABLE `allowed`
-  ADD CONSTRAINT `batch` FOREIGN KEY (`batch_name`, `batch_dept`) REFERENCES `batches` (`batch_name`, `batch_dept`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `batch` FOREIGN KEY (`batch_name`,`batch_dept`) REFERENCES `batches` (`batch_name`, `batch_dept`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `course` FOREIGN KEY (`course_id`) REFERENCES `courses` (`course_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
@@ -255,4 +294,9 @@ ALTER TABLE `slots`
 ALTER TABLE `slot_allocs`
   ADD CONSTRAINT `fk_course` FOREIGN KEY (`course_id`) REFERENCES `courses` (`course_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_room` FOREIGN KEY (`room`) REFERENCES `rooms` (`room_name`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_slot` FOREIGN KEY (`table_name`, `day`, `slot_num`) REFERENCES `slots` (`table_name`, `day`, `slot_num`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_slot` FOREIGN KEY (`table_name`,`day`,`slot_num`) REFERENCES `slots` (`table_name`, `day`, `slot_num`) ON DELETE CASCADE ON UPDATE CASCADE;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

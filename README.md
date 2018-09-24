@@ -1,6 +1,6 @@
 ﻿QuickSlots: A web-based timetable management system 
 ----------
-
+users : sch1 / sch1 , dean/dean)
 
 --------------------------------------------------------------------------------
     Features
